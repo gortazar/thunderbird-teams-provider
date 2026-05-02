@@ -22,6 +22,7 @@ const POLL_INTERVAL_MS = 30_000;
 // ---------------------------------------------------------------------------
 let accessToken = null;
 let refreshToken = null;
+let tokenExpiry = 0;       // tracked in-memory to avoid extra storage reads
 let settings = {};
 let cachedChats = [];
 let unreadChatIds = new Set();
@@ -66,6 +67,7 @@ async function loadSettings() {
   if (settings.accessToken) {
     accessToken = settings.accessToken;
     refreshToken = settings.refreshToken;
+    tokenExpiry = settings.tokenExpiry || 0;
   }
 }
 
@@ -195,6 +197,7 @@ async function storeTokens(tokens) {
     refreshToken = tokens.refresh_token;
   }
   const expiry = Date.now() + tokens.expires_in * 1000;
+  tokenExpiry = expiry;
   await messenger.storage.local.set({
     accessToken,
     refreshToken,
@@ -206,9 +209,8 @@ async function storeTokens(tokens) {
 // Graph API helper
 // ---------------------------------------------------------------------------
 async function apiCall(endpoint, options = {}) {
-  // Proactively refresh if < 60 s remain
-  const stored = await messenger.storage.local.get("tokenExpiry");
-  if (stored.tokenExpiry && Date.now() > stored.tokenExpiry - 60_000) {
+  // Proactively refresh if < 60 s remain (use in-memory expiry to avoid storage reads)
+  if (tokenExpiry && Date.now() > tokenExpiry - 60_000) {
     await refreshAccessToken();
   }
 
@@ -483,7 +485,7 @@ async function init() {
         32: "icons/teams-32.svg",
       },
       badgeText: "",
-      badgeBackgroundColor: "#E8423F",
+      badgeBackgroundColor: "#E8423F", // Standard notification-red for unread badge
     });
   } catch (err) {
     console.warn("[teams-provider] spacesToolbar.addButton:", err);

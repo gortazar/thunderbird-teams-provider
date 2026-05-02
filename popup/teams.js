@@ -193,6 +193,12 @@ async function selectChat(chatId, displayName) {
   composeInput.disabled = false;
   sendBtn.disabled = false;
 
+  // Stop any running per-chat timer before starting a new one
+  if (messagePollingTimer !== null) {
+    clearInterval(messagePollingTimer);
+    messagePollingTimer = null;
+  }
+
   // Update active state in list
   document.querySelectorAll(".chat-item").forEach((el) => {
     el.classList.toggle("active", el.dataset.chatId === chatId);
@@ -211,9 +217,10 @@ async function selectChat(chatId, displayName) {
   unreadSet.delete(chatId);
   renderChatList(currentChats, [...unreadSet]);
 
-  // Start per-chat polling while this chat is open
-  clearInterval(messagePollingTimer);
-  messagePollingTimer = setInterval(() => loadMessages(chatId), 15_000);
+  // Start per-chat polling (only if we are still on this chat after await)
+  if (currentChatId === chatId && messagePollingTimer === null) {
+    messagePollingTimer = setInterval(() => loadMessages(chatId), 15_000);
+  }
 }
 
 // ---------------------------------------------------------------------------
