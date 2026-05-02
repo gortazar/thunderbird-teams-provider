@@ -1,0 +1,12 @@
+{
+  "build": {
+    "overwriteDest": true,
+    "artifactsDir": "web-ext-artifacts"
+  },
+  "lint": {
+    "ignoreFiles": [
+      "node_modules",
+      "web-ext-artifacts"
+    ]
+  }
+}

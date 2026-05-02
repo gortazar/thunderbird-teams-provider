@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thunderbird Teams Provider – Options</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="options-container">
+    <header class="options-header">
+      <img src="../icons/teams-48.svg" alt="Teams logo" width="32" height="32" />
+      <h1>Microsoft Teams Provider</h1>
+    </header>
+
+    <p id="save-notice" class="notice notice-success" hidden></p>
+    <p id="save-error" class="notice notice-error" hidden></p>
+
+    <section class="section">
+      <h2>Azure Application Settings</h2>
+      <p class="section-desc">
+        Register an application in the
+        <a href="https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank">
+          Azure Active Directory portal
+        </a>
+        and enter its Client&nbsp;ID here. See the
+        <a id="readme-link" href="#">README</a> for step-by-step instructions.
+      </p>
+
+      <div class="field">
+        <label for="client-id">Client ID <span class="required">*</span></label>
+        <input id="client-id" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false" />
+        <span class="field-hint">Application (client) ID from Azure AD app registration.</span>
+      </div>
+
+      <div class="field">
+        <label for="tenant-id">Tenant ID</label>
+        <input id="tenant-id" type="text" placeholder="common (default)" autocomplete="off" spellcheck="false" />
+        <span class="field-hint">
+          Leave blank to use <code>common</code> (works for personal &amp; work accounts).
+          For a specific organisation enter its Directory (tenant) ID.
+        </span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Display Settings</h2>
+
+      <div class="field field-check">
+        <label class="check-label">
+          <input id="disable-avatars" type="checkbox" />
+          <span>Disable avatars – show sender initials instead</span>
+        </label>
+        <span class="field-hint">
+          When enabled, profile photos are never downloaded. Each sender is identified
+          by a coloured circle containing their first and last initials (e.g.&nbsp;<code>JS</code>
+          for Jane Smith).
+        </span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Account</h2>
+      <div id="auth-status" class="auth-status">
+        <span id="auth-label">Not signed in.</span>
+        <button id="signin-btn" class="btn btn-primary">Sign in with Microsoft</button>
+        <button id="signout-btn" class="btn btn-secondary" hidden>Sign out</button>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="save-btn" class="btn btn-primary">Save Settings</button>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

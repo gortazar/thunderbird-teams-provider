@@ -1,0 +1,18 @@
+{
+  "name": "thunderbird-teams-provider",
+  "version": "1.0.0",
+  "description": "Microsoft Teams chat integration for Thunderbird",
+  "private": true,
+  "scripts": {
+    "build": "web-ext build --overwrite-dest --filename={name}-{version}.xpi --ignore-files=package.json --ignore-files=package-lock.json --ignore-files=web-ext-config.json --ignore-files=*.md",
+    "lint": "web-ext lint",
+    "start": "web-ext run --target=thunderbird"
+  },
+  "devDependencies": {
+    "web-ext": "^8.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

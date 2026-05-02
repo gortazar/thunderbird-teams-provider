@@ -1,0 +1,12 @@
+# npm
+node_modules/
+npm-debug.log*
+
+# web-ext build output
+web-ext-artifacts/
+
+# Editor / OS
+.DS_Store
+*.swp
+.idea/
+.vscode/

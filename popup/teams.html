@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microsoft Teams</title>
+  <link rel="stylesheet" href="teams.css" />
+</head>
+<body>
+  <!-- ── Sign-in screen ────────────────────────────────────────────── -->
+  <div id="signin-screen" class="screen" hidden>
+    <div class="signin-box">
+      <div class="signin-logo">
+        <img src="../icons/teams-96.svg" alt="Teams logo" width="64" height="64" />
+      </div>
+      <h1>Microsoft Teams</h1>
+      <p class="signin-subtitle">Sign in with your Microsoft account to access your Teams chats.</p>
+      <p id="signin-error" class="error-text" hidden></p>
+      <button id="signin-btn" class="btn btn-primary">Sign in with Microsoft</button>
+      <p class="signin-note">
+        You need a configured Client&nbsp;ID.
+        <a id="open-options-link" href="#">Open Options</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Loading screen ────────────────────────────────────────────── -->
+  <div id="loading-screen" class="screen" hidden>
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p>Loading chats…</p>
+    </div>
+  </div>
+
+  <!-- ── Main chat screen ──────────────────────────────────────────── -->
+  <div id="main-screen" class="screen" hidden>
+    <div class="layout">
+
+      <!-- Left panel: chat list -->
+      <aside class="panel-left">
+        <div class="panel-header">
+          <span class="panel-title">Chats</span>
+          <button id="refresh-btn" class="icon-btn" title="Refresh chats">↻</button>
+          <button id="signout-btn" class="icon-btn" title="Sign out">⏻</button>
+        </div>
+        <div id="chat-list" class="chat-list"></div>
+      </aside>
+
+      <!-- Right panel: messages + compose -->
+      <main class="panel-right">
+        <!-- Header shows name of current chat -->
+        <div class="chat-header" id="chat-header">
+          <span id="chat-title">Select a chat</span>
+        </div>
+
+        <!-- Message feed -->
+        <div id="messages-container" class="messages-container">
+          <p class="placeholder-text">Select a chat on the left to see messages.</p>
+        </div>
+
+        <!-- Compose area -->
+        <div class="compose-area">
+          <input
+            id="compose-input"
+            class="compose-input"
+            type="text"
+            placeholder="Type a message and press Enter…"
+            disabled
+            autocomplete="off"
+          />
+          <button id="send-btn" class="btn btn-send" disabled title="Send (Enter)">Send</button>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="teams.js"></script>
+</body>
+</html>
