@@ -72,48 +72,70 @@ The build output is placed in `web-ext-artifacts/thunderbird_teams_provider-<ver
 
 ## Allowing the plugin to access your Teams account
 
-The extension uses the **Microsoft Graph API** authenticated with **OAuth 2.0 + PKCE**
-(no client secret is stored or transmitted). You must register a free Azure AD application
-to obtain a **Client ID**.
+### For end-users — no setup required
 
-### Step 1 – Register an Azure AD application
+The extension works **out of the box**, using the same sign-in experience as Thunderbird's
+built-in Microsoft mail support:
 
-1. Sign in to the [Azure portal](https://portal.azure.com) with your Microsoft account.
+1. Install the extension (see [Installing on Thunderbird](#installing-on-thunderbird)).
+2. Click the **Teams** button in the vertical sidebar on the left.
+3. Click **Sign in with Microsoft**.
+4. A Microsoft login page opens — enter your email, password, and one-time code as usual.
+5. The first time you sign in from an organisational account you may be prompted to
+   grant the application access to your Teams chats (identical to the first-time
+   authorisation request Thunderbird shows when you add a Microsoft email account).
+6. Done — your chats load automatically.
+
+> No Azure portal access is needed. No Client ID needs to be configured.
+
+### For administrators — admin consent (optional)
+
+`Chat.ReadWrite` is a Microsoft Graph permission that some organisations require
+an administrator to pre-approve for all users. If your users see a
+*"Need admin approval"* screen when signing in, an Azure AD global/Application admin
+can grant tenant-wide consent using the URL below (replace `<TENANT_ID>` with your
+Directory ID and `<CLIENT_ID>` with the extension's Application ID):
+
+```
+https://login.microsoftonline.com/<TENANT_ID>/adminconsent?client_id=<CLIENT_ID>
+```
+
+### For developers — building with your own app registration
+
+If you are building from source and want to publish the extension under your own
+Azure AD application (e.g. for a custom organisational deployment), follow these steps:
+
+#### Step 1 – Register an Azure AD application
+
+1. Sign in to the [Azure portal](https://portal.azure.com).
 2. Navigate to **Azure Active Directory → App registrations → New registration**.
 3. Fill in the form:
    - **Name**: `Thunderbird Teams Provider` (or any name you prefer)
-   - **Supported account types**: choose the option that matches your scenario:
-     - *Accounts in any organizational directory and personal Microsoft accounts* – broadest compatibility.
-     - *Accounts in this organizational directory only* – if you only use one work tenant.
-   - **Redirect URI**: select **Public client / native (mobile & desktop)** and enter the
-     redirect URL shown in the extension options page (see step 3 below).
+   - **Supported account types**: *Accounts in any organizational directory and
+     personal Microsoft accounts* (broadest compatibility) or
+     *Accounts in this organizational directory only* for single-tenant.
+   - **Redirect URI**: select **Public client / native (mobile & desktop)** and
+     enter the redirect URL from **extension options → Advanced → sign-in redirect**.
 4. Click **Register**.
 
-### Step 2 – Add API permissions
+#### Step 2 – Add API permissions
 
-1. In your new app registration, go to **API permissions → Add a permission → Microsoft Graph → Delegated permissions**.
-2. Search for and add:
-   - `Chat.ReadWrite`
-   - `User.Read`
-   - `offline_access`
-3. Click **Add permissions**.
-4. If you are using a work / school account with an administrator, click
-   **Grant admin consent** (required for `Chat.ReadWrite` in some tenants).
+1. Go to **API permissions → Add a permission → Microsoft Graph → Delegated permissions**.
+2. Add: `Chat.ReadWrite`, `User.Read`, `offline_access`.
+3. Click **Add permissions**, then optionally **Grant admin consent**.
 
-### Step 3 – Configure the extension
+#### Step 3 – Embed the Client ID
 
-1. Open Thunderbird and click the **Teams** button in the vertical sidebar on the left.
-2. Click **Open Options** (or go to Add-ons Manager → Thunderbird Teams Provider → Preferences).
-3. Enter:
-   - **Client ID** – the *Application (client) ID* from the Azure portal overview page.
-   - **Tenant ID** – leave blank to use `common` (works for both personal and work accounts),
-     or paste your *Directory (tenant) ID* for a single-tenant deployment.
-4. Click **Save Settings**.
-5. Click **Sign in with Microsoft** and complete the browser-based login flow.
+Replace the placeholder in `background/background.js`:
 
-> **Personal Microsoft accounts** (Outlook.com, Hotmail, etc.) may have limited access to
-> Teams chat via the Graph API depending on your account type. A work or school account
-> provides full `Chat.ReadWrite` access.
+```js
+const DEFAULT_CLIENT_ID = "YOUR_EXTENSION_CLIENT_ID_HERE";
+```
+
+with your *Application (client) ID* from the Azure portal overview page, then
+rebuild the extension with `npm run build`.
+
+Users of your build won't need to configure anything — they just click **Sign in**.
 
 ---
 
@@ -124,8 +146,8 @@ Open **Thunderbird → Add-ons Manager → Thunderbird Teams Provider → Prefer
 
 | Option | Description |
 |--------|-------------|
-| **Client ID** | Azure AD application ID. Required. |
-| **Tenant ID** | Azure AD tenant (directory) ID. Defaults to `common`. |
+| **Client ID** *(advanced)* | Override the extension's built-in Azure AD app ID. Leave blank to use the pre-configured default. |
+| **Tenant ID** *(advanced)* | Override the Azure AD tenant. Leave blank for `common` (personal and work accounts). |
 | **Disable avatars** | When checked, profile photos are never fetched. Each sender is represented by a coloured circle containing their initials (first letter of first name + first letter of last name, e.g. **JS** for *Jane Smith*). Useful for privacy or bandwidth savings. |
 | **Sign in / Sign out** | Authenticate or revoke the session. Tokens are stored locally in Thunderbird's secure extension storage. |
 

@@ -17,6 +17,17 @@
 const GRAPH_API_BASE = "https://graph.microsoft.com/v1.0";
 const POLL_INTERVAL_MS = 30_000;
 
+// Client ID of this extension's registered Azure AD application.
+// End-users do NOT need to touch this — authentication works out of the box,
+// exactly like Thunderbird's built-in Microsoft mail support.
+// An organisation that wants to use their own app registration can override it
+// via the Options page (Advanced section).
+//
+// Developers: register a public-client (no client secret) Azure AD app with
+// delegated permissions Chat.ReadWrite, User.Read and offline_access, then
+// replace this placeholder with the Application (client) ID before publishing.
+const DEFAULT_CLIENT_ID = "YOUR_EXTENSION_CLIENT_ID_HERE";
+
 // ---------------------------------------------------------------------------
 // Runtime state (reset on service-worker restart)
 // ---------------------------------------------------------------------------
@@ -75,12 +86,16 @@ async function loadSettings() {
 // OAuth 2.0 + PKCE authentication
 // ---------------------------------------------------------------------------
 async function authenticate() {
-  const clientId = settings.clientId;
+  // Prefer an org-specific Client ID configured in Options; fall back to the
+  // extension's own registered default (just like Thunderbird uses its own
+  // registered app ID for Microsoft email — no Azure setup required by users).
+  const clientId = settings.clientId || DEFAULT_CLIENT_ID;
   const tenantId = settings.tenantId || "common";
 
-  if (!clientId) {
+  if (!clientId || clientId === "YOUR_EXTENSION_CLIENT_ID_HERE") {
     throw new Error(
-      "Client ID not configured. Please open the extension options."
+      "This build has no Client ID configured. " +
+      "Please enter one in the extension options, or contact the maintainer."
     );
   }
 

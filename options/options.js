@@ -41,17 +41,12 @@ function updateAuthUI(isSignedIn) {
 
 // ── Save settings ────────────────────────────────────────────────────────────
 async function saveSettings() {
-  const clientId = clientIdInput.value.trim();
-  if (!clientId) {
-    showError("Client ID is required.");
-    return;
-  }
-
   hideNotices();
 
+  // Client ID is optional – blank means "use the extension's built-in default"
   await messenger.storage.local.set({
-    clientId,
-    tenantId: tenantIdInput.value.trim() || "common",
+    clientId: clientIdInput.value.trim(),
+    tenantId: tenantIdInput.value.trim(),
     disableAvatars: disableAvatarsInput.checked,
   });
 
@@ -63,16 +58,10 @@ async function saveSettings() {
 
 // ── Sign in ──────────────────────────────────────────────────────────────────
 signinBtn.addEventListener("click", async () => {
-  const clientId = clientIdInput.value.trim();
-  if (!clientId) {
-    showError("Enter a Client ID before signing in.");
-    return;
-  }
-
-  // Save first so background has the client ID
+  // Save any values in the Advanced fields first so background has them
   await messenger.storage.local.set({
-    clientId,
-    tenantId: tenantIdInput.value.trim() || "common",
+    clientId: clientIdInput.value.trim(),
+    tenantId: tenantIdInput.value.trim(),
     disableAvatars: disableAvatarsInput.checked,
   });
   messenger.runtime.sendMessage({ action: "settingsUpdated" }).catch(() => {});
@@ -89,7 +78,7 @@ signinBtn.addEventListener("click", async () => {
     updateAuthUI(true);
     showSuccess("Signed in successfully.");
   } else {
-    showError(resp?.error || "Authentication failed. Check your Client ID and try again.");
+    showError(resp?.error || "Authentication failed. Try again or check the Advanced settings.");
   }
 });
 
