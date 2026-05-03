@@ -72,59 +72,64 @@ The build output is placed in `web-ext-artifacts/thunderbird_teams_provider-<ver
 
 ## Allowing the plugin to access your Teams account
 
-### For end-users — no setup required
+### Quick answer — do end-users need any Azure setup?
 
-The extension works **out of the box**, using the same sign-in experience as Thunderbird's
-built-in Microsoft mail support:
+**No.** If you download an already-built `.xpi` from the
+[Releases page](https://github.com/gortazar/thunderbird-teams-provider/releases),
+you just install it and click **Sign in with Microsoft**. No Azure portal, no Client ID,
+no configuration of any kind. The experience is identical to adding a Microsoft email
+account in Thunderbird.
 
-1. Install the extension (see [Installing on Thunderbird](#installing-on-thunderbird)).
-2. Click the **Teams** button in the vertical sidebar on the left.
-3. Click **Sign in with Microsoft**.
-4. A Microsoft login page opens — enter your email, password, and one-time code as usual.
-5. The first time you sign in from an organisational account you may be prompted to
-   grant the application access to your Teams chats (identical to the first-time
-   authorisation request Thunderbird shows when you add a Microsoft email account).
-6. Done — your chats load automatically.
+> **TL;DR for end-users:**
+> 1. Install the `.xpi` from Releases.
+> 2. Click the **Teams** button in the Thunderbird sidebar.
+> 3. Click **Sign in with Microsoft** → enter your email, password, one-time code.
+> 4. On first sign-in your organisation may ask you to approve the app once (same
+>    one-time screen you saw when adding your Microsoft email to Thunderbird).
+> 5. Done — your chats load automatically.
 
-> No Azure portal access is needed. No Client ID needs to be configured.
+---
 
-### For administrators — admin consent (optional)
+### For the extension publisher — one-time app registration (required before distributing)
 
-`Chat.ReadWrite` is a Microsoft Graph permission that some organisations require
-an administrator to pre-approve for all users. If your users see a
-*"Need admin approval"* screen when signing in, an Azure AD global/Application admin
-can grant tenant-wide consent using the URL below (replace `<TENANT_ID>` with your
-Directory ID and `<CLIENT_ID>` with the extension's Application ID):
+> **This section is for whoever builds and publishes the `.xpi`, not for end-users.**
+> If you are just installing a pre-built release you can skip everything below.
 
+The extension ships with a placeholder Client ID in the source code:
+
+```js
+const DEFAULT_CLIENT_ID = "YOUR_EXTENSION_CLIENT_ID_HERE";
 ```
-https://login.microsoftonline.com/<TENANT_ID>/adminconsent?client_id=<CLIENT_ID>
-```
 
-### For developers — building with your own app registration
-
-If you are building from source and want to publish the extension under your own
-Azure AD application (e.g. for a custom organisational deployment), follow these steps:
+Before you publish a build you must replace this placeholder with a real Azure AD
+Application (client) ID. **You only need to do this once**, and you do **not** need
+your organisation's Azure account — a free personal Microsoft account
+(e.g. outlook.com, hotmail.com) is enough to register a multi-tenant application that
+any work or school account can sign in to.
 
 #### Step 1 – Register an Azure AD application
 
-1. Sign in to the [Azure portal](https://portal.azure.com).
+1. Sign in to the [Azure portal](https://portal.azure.com) with **any Microsoft account**
+   (personal accounts work fine).
 2. Navigate to **Azure Active Directory → App registrations → New registration**.
 3. Fill in the form:
    - **Name**: `Thunderbird Teams Provider` (or any name you prefer)
    - **Supported account types**: *Accounts in any organizational directory and
-     personal Microsoft accounts* (broadest compatibility) or
-     *Accounts in this organizational directory only* for single-tenant.
+     personal Microsoft accounts* — this allows users from any organisation to sign in.
    - **Redirect URI**: select **Public client / native (mobile & desktop)** and
-     enter the redirect URL from **extension options → Advanced → sign-in redirect**.
+     enter the redirect URL shown in the extension options page (see below).
 4. Click **Register**.
 
 #### Step 2 – Add API permissions
 
 1. Go to **API permissions → Add a permission → Microsoft Graph → Delegated permissions**.
 2. Add: `Chat.ReadWrite`, `User.Read`, `offline_access`.
-3. Click **Add permissions**, then optionally **Grant admin consent**.
+3. Click **Add permissions**.
 
-#### Step 3 – Embed the Client ID
+> `Chat.ReadWrite` is a user-delegated permission. Users consent to it themselves on
+> first sign-in. No admin pre-approval is needed for most tenants.
+
+#### Step 3 – Embed the Client ID and build
 
 Replace the placeholder in `background/background.js`:
 
@@ -132,10 +137,29 @@ Replace the placeholder in `background/background.js`:
 const DEFAULT_CLIENT_ID = "YOUR_EXTENSION_CLIENT_ID_HERE";
 ```
 
-with your *Application (client) ID* from the Azure portal overview page, then
-rebuild the extension with `npm run build`.
+with your *Application (client) ID* from the Azure portal overview page, then build:
 
-Users of your build won't need to configure anything — they just click **Sign in**.
+```bash
+npm run build
+```
+
+The generated `.xpi` in `web-ext-artifacts/` is ready to distribute. Users of your
+build just install it and click **Sign in** — no further configuration required.
+
+---
+
+### For organisation administrators — admin consent (optional)
+
+Some organisations configure Azure AD to require an administrator to pre-approve any
+app before users can sign in to it. If your users see a *"Need admin approval"*
+screen, an Azure AD global administrator can grant tenant-wide consent via:
+
+```
+https://login.microsoftonline.com/<TENANT_ID>/adminconsent?client_id=<CLIENT_ID>
+```
+
+Replace `<TENANT_ID>` with your Directory (tenant) ID and `<CLIENT_ID>` with the
+extension's Application ID. After this one-time approval, users sign in normally.
 
 ---
 
