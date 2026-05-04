@@ -5,6 +5,9 @@ npm-debug.log*
 # web-ext build output
 web-ext-artifacts/
 
+# Generated security scan artifacts (uploaded to GitHub Security tab in CI)
+eslint-results.sarif
+
 # Editor / OS
 .DS_Store
 *.swp

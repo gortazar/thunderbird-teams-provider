@@ -12,8 +12,29 @@ permissions:
   contents: write   # needed to create GitHub Releases
 
 jobs:
+  test:
+    name: Test (unit + integration)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit and integration tests
+        run: npm test
+
   build:
     name: Build extension
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -78,3 +99,4 @@ jobs:
             for full instructions, including snap installation.
           files: web-ext-artifacts/*.xpi
           fail_on_unmatched_files: true
+

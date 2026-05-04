@@ -476,8 +476,14 @@ messenger.runtime.onMessage.addListener(async (message) => {
 });
 
 async function markChatRead(chatId) {
+  // Validate chatId before using it as an object key to prevent prototype pollution.
+  // Teams chat IDs are always non-empty strings of bounded length.
+  if (typeof chatId !== "string" || chatId.length === 0 || chatId.length > 512) {
+    return;
+  }
   const stored = await messenger.storage.local.get("lastReadTimes");
   const lastReadTimes = stored.lastReadTimes || {};
+  // eslint-disable-next-line security/detect-object-injection -- chatId is validated above; internal extension message only
   lastReadTimes[chatId] = new Date().toISOString();
   await messenger.storage.local.set({ lastReadTimes });
   unreadChatIds.delete(chatId);
