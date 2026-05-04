@@ -1,0 +1,438 @@
+/* ============================================================
+   Thunderbird Teams Provider – Popup Styles
+   ============================================================ */
+
+/* ── Reset / Base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  background: var(--layout-background-0, #ffffff);
+  color: var(--layout-color-0, #1a1a1a);
+  overflow: hidden;
+}
+
+a { color: var(--link-color, #0a6ed1); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Screens ─────────────────────────────────────────────── */
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.screen[hidden] { display: none !important; }
+
+/* ── Sign-in ─────────────────────────────────────────────── */
+.signin-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 48px;
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid var(--layout-border-0, #d0d0d0);
+  border-radius: 10px;
+  background: var(--layout-background-1, #f9f9f9);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.signin-logo img {
+  display: block;
+}
+
+.signin-box h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--layout-color-0, #1a1a1a);
+}
+
+.signin-subtitle {
+  text-align: center;
+  color: var(--layout-color-1, #555);
+  line-height: 1.5;
+}
+
+.signin-note {
+  font-size: 11px;
+  color: var(--layout-color-2, #888);
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--layout-color-1, #555);
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--layout-border-0, #ddd);
+  border-top-color: #5059C9;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.spinner.small {
+  width: 20px;
+  height: 20px;
+  border-width: 3px;
+  margin: 24px auto;
+  display: block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-primary {
+  background: #5059C9;
+  color: #fff;
+  width: 100%;
+}
+.btn-primary:hover:not(:disabled) { background: #3d47b3; }
+
+.btn-send {
+  background: #5059C9;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 0 4px 4px 0;
+  flex-shrink: 0;
+}
+.btn-send:hover:not(:disabled) { background: #3d47b3; }
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--layout-color-1, #666);
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.icon-btn:hover { background: var(--button-hover-background, rgba(0,0,0,0.07)); }
+
+/* ── Errors ──────────────────────────────────────────────── */
+.error-text {
+  color: #c0392b;
+  font-size: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+/* ── Main layout ─────────────────────────────────────────── */
+#main-screen {
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Left panel ──────────────────────────────────────────── */
+.panel-left {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  min-width: 200px;
+  max-width: 320px;
+  border-right: 1px solid var(--layout-border-0, #d0d0d0);
+  background: var(--layout-background-1, #f5f5f5);
+  flex-shrink: 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--layout-border-0, #d0d0d0);
+  background: var(--layout-background-2, #efefef);
+}
+
+.panel-title {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── Chat item ───────────────────────────────────────────── */
+.chat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--layout-border-0, #e8e8e8);
+  transition: background 0.1s;
+}
+
+.chat-item:hover { background: var(--button-hover-background, rgba(0,0,0,0.05)); }
+
+.chat-item.active {
+  background: var(--selected-item-color, #d0e4ff);
+}
+
+/* Unread chats shown in bold – matches Thunderbird convention */
+.chat-item.unread .chat-item-name {
+  font-weight: 700;
+}
+
+.chat-item-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-item-name {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-item-preview {
+  font-size: 11px;
+  color: var(--layout-color-2, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5059C9;
+  flex-shrink: 0;
+}
+
+/* ── Avatar ──────────────────────────────────────────────── */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #5059C9;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Right panel ─────────────────────────────────────────── */
+.panel-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: var(--layout-background-0, #ffffff);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--layout-border-0, #d0d0d0);
+  background: var(--layout-background-2, #efefef);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+#chat-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Messages container ──────────────────────────────────── */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.placeholder-text {
+  color: var(--layout-color-2, #999);
+  text-align: center;
+  margin-top: 40px;
+  font-style: italic;
+}
+
+/* ── Message bubble ──────────────────────────────────────── */
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 85%;
+}
+
+.message-mine {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-theirs {
+  align-self: flex-start;
+}
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 100%;
+}
+
+.message-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.message-mine .message-meta {
+  justify-content: flex-end;
+}
+
+.sender-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--layout-color-1, #555);
+}
+
+.message-time {
+  font-size: 10px;
+  color: var(--layout-color-2, #999);
+}
+
+.message-body {
+  padding: 8px 12px;
+  border-radius: 12px;
+  line-height: 1.5;
+  word-break: break-word;
+  font-size: 13px;
+}
+
+.message-mine .message-body {
+  background: #5059C9;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.message-theirs .message-body {
+  background: var(--layout-background-1, #f0f0f0);
+  color: var(--layout-color-0, #1a1a1a);
+  border-bottom-left-radius: 4px;
+}
+
+/* ── Compose area ────────────────────────────────────────── */
+.compose-area {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid var(--layout-border-0, #d0d0d0);
+  background: var(--layout-background-1, #fafafa);
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.compose-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid var(--layout-border-0, #ccc);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  background: var(--layout-background-0, #fff);
+  color: var(--layout-color-0, #1a1a1a);
+  outline: none;
+  min-width: 0;
+}
+
+.compose-input:focus {
+  border-color: #5059C9;
+  box-shadow: 0 0 0 2px rgba(80,89,201,0.15);
+}
+
+.compose-input:disabled { opacity: 0.55; }
+
+/* ── Temp notice ─────────────────────────────────────────── */
+.temp-notice {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.78);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 12px;
+  z-index: 1000;
+  pointer-events: none;
+  animation: fadeInOut 4s forwards;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Scrollbars (optional polish) ───────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }

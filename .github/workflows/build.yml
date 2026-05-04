@@ -1,0 +1,102 @@
+name: Build & Release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write   # needed to create GitHub Releases
+
+jobs:
+  test:
+    name: Test (unit + integration)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit and integration tests
+        run: npm test
+
+  build:
+    name: Build extension
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Node.js ──────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── 3. Install dependencies ────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Lint extension ──────────────────────────────────────────────────
+      - name: Lint extension (web-ext lint)
+        run: npm run lint
+
+      # ── 5. Build .xpi ─────────────────────────────────────────────────────
+      - name: Build extension (web-ext build)
+        run: npm run build
+
+      # ── 6. Upload artifact (all runs) ──────────────────────────────────────
+      - name: Upload XPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thunderbird-teams-provider-xpi
+          path: web-ext-artifacts/*.xpi
+          if-no-files-found: error
+          retention-days: 30
+
+      # ── 7. Read version from manifest (main branch only) ──────────────────
+      - name: Read extension version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: version
+        run: |
+          VERSION=$(node -e "const m=require('./manifest.json'); console.log(m.version);")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      # ── 8. Create GitHub Release (main branch only) ────────────────────────
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}-build.${{ github.run_number }}
+          name: "v${{ steps.version.outputs.version }} (build ${{ github.run_number }})"
+          body: |
+            ## Thunderbird Teams Provider v${{ steps.version.outputs.version }}
+
+            Automated release built from commit ${{ github.sha }}.
+
+            ### Installation
+            1. Download the `.xpi` file below.
+            2. In Thunderbird open **Add-ons Manager** (`Ctrl+Shift+A`).
+            3. Click the ⚙ gear icon → **Install Add-on From File…** and select the downloaded `.xpi`.
+
+            See the [README](https://github.com/${{ github.repository }}/blob/main/README.md)
+            for full instructions, including snap installation.
+          files: web-ext-artifacts/*.xpi
+          fail_on_unmatched_files: true
+

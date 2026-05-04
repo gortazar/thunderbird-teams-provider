@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "Thunderbird Teams Provider",
+  "description": "Microsoft Teams chat integration for Thunderbird",
+  "version": "1.0.0",
+  "author": "thunderbird-teams-provider contributors",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "thunderbird-teams-provider@gortazar.github.com",
+      "strict_min_version": "102.0"
+    }
+  },
+  "data_collection_permissions": {
+    "required": [],
+    "optional": []
+  },
+  "permissions": [
+    "storage",
+    "identity",
+    "notifications"
+  ],
+  "background": {
+    "scripts": ["background/background.js"],
+    "persistent": true
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/teams-16.svg",
+    "32": "icons/teams-32.svg",
+    "48": "icons/teams-48.svg",
+    "96": "icons/teams-96.svg"
+  }
+}
